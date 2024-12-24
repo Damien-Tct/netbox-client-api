@@ -51,9 +51,9 @@ if __name__ == "__main__" :
 
         for arguments in args:
             try :
-                result = requete(arguments, api_url, limit)
+                result = requete(arguments, api_url_ip, limit)
             except :
-                result = requete(arguments, api_url)
+                result = requete(arguments, api_url_ip)
             print(f"Searching for : {arguments}\n")
             if len(result) != 0 :
                 for results in result :
