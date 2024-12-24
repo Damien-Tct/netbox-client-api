@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-import requests, json, sys, re
+import requests, json, sys
 from credentials import *
 
 '''
