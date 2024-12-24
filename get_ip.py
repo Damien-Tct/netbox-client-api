@@ -11,6 +11,7 @@ credentials.py need some variables inside :
     proxy_user : the user you have to login to pass through the proxy
     proxy_password : the password that allow you to login with your user
     proxy_address : the proxy's address, included the port number, like : 127.0.0.1:3128
+
 '''
 
 # Disable SSL  warnings
@@ -21,8 +22,12 @@ token_auth = "Token " + api_token
 https_proxy = "http://" + proxy_user + ":" + proxy_password + "@" + proxy_address
 proxies = { "https" : https_proxy }
 
-# Récupération $1
 def requete(arg, url, limit = "1"):
+    '''
+    the first argument : arg : all the args passed to the command
+    the second argument : url : the url requested for api requests
+    the third : limit : by default 1, can be overwriten when the method is called
+    '''
     try:
         api_call = requests.get(f"{url}?q={arg}&limit={limit}", headers={'Authorization': token_auth }, proxies = proxies, verify=False ).json()
     except:
@@ -31,7 +36,6 @@ def requete(arg, url, limit = "1"):
     
     result = [ {"ip" : ip["display"], "DNS" : ip["dns_name"], "description" : ip["description"]}  for ip in api_call.get("results")]
     return result
-
 
 if __name__ == "__main__" :
     try :
