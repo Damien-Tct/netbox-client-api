@@ -22,9 +22,9 @@ https_proxy = "http://" + proxy_user + ":" + proxy_password + "@" + proxy_addres
 proxies = { "https" : https_proxy }
 
 # Récupération $1
-def requete(arg, url):
+def requete(arg, url, limit = "1"):
     try:
-        api_call = requests.get(f"{api_url}?q={arg}", headers={'Authorization': token_auth }, proxies = proxies, verify=False ).json()
+        api_call = requests.get(f"{url}?q={arg}&limit={limit}", headers={'Authorization': token_auth }, proxies = proxies, verify=False ).json()
     except:
         print("Erreur lors de la requête API, vérifiez les credentials")
         sys.exit(1)
@@ -35,15 +35,32 @@ def requete(arg, url):
 
 if __name__ == "__main__" :
     try :
-        for arguments in sys.argv[1:]:
-            result = requete(arguments, api_url)
-            print(f"Recherche : {arguments}")
+        args = sys.argv[1:]
+        for arguments in args:
+            if arguments == "--limit" or arguments == "-l":
+                limit = args[args.index(arguments) + 1]
+                try :
+                    limit == int(limit)
+                except:
+                    print(f"the limit option need to be an integer")
+                    sys.exit(1)
+                args.pop(args.index(limit))
+                args.pop(args.index(arguments))
+            else :
+                None
+
+        for arguments in args:
+            try :
+                result = requete(arguments, api_url, limit)
+            except :
+                result = requete(arguments, api_url)
+            print(f"Searching for : {arguments}")
             if len(result) != 0 :
                 for results in result :
                     print(f'IP : {results["ip"]:<20s} DNS : {results["DNS"]:<25s} Description : {results["description"]:<40s}')
             else :
-                print(f"Aucune entrée trouvée")
+                print(f"No entries found")
             print()
     except IndexError as e:
-        print(f"Verifiez les arguments : {e}")
+        print(f"get rif of the arguments : {e}")
         sys.exit(1)
