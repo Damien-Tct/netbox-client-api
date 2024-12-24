@@ -7,7 +7,7 @@ from credentials import *
 credentials.py need some variables inside :
 
     api_token : your netbox's api token
-    api_url : the url where you can get the api requests. like : https://127.0.0.1/api/ipam/ip-addresses
+    api_url_ip : the url where you can get the api requests about the ip addresses like : https://127.0.0.1/api/ipam/ip-addresses
     proxy_user : the user you have to login to pass through the proxy
     proxy_password : the password that allow you to login with your user
     proxy_address : the proxy's address, included the port number, like : 127.0.0.1:3128
@@ -54,12 +54,14 @@ if __name__ == "__main__" :
                 result = requete(arguments, api_url, limit)
             except :
                 result = requete(arguments, api_url)
-            print(f"Searching for : {arguments}")
+            print(f"Searching for : {arguments}\n")
             if len(result) != 0 :
                 for results in result :
-                    print(f'IP : {results["ip"]:<20s} DNS : {results["DNS"]:<25s} Description : {results["description"]:<40s}')
+                    print(f'----------')
+                    print(f'IP : {results["ip"]:<20s}\nDNS : {results["DNS"]:<25s}\nDescription : {results["description"]:<40s}')
             else :
                 print(f"No entries found")
+            print(f'----------')
             print()
     except IndexError as e:
         print(f"get rif of the arguments : {e}")
