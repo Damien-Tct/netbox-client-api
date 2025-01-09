@@ -1,8 +1,11 @@
 #! /usr/bin/env python3
 
-import requests, json, sys
-from credentials import *
-
+try:
+    import requests, json, sys, argparse
+    from credentials import *
+except ModuleNotFoundError as e :
+    print(e)
+    sys.exit(1)
 '''
 credentials.py need some variables inside :
 
@@ -39,26 +42,14 @@ def requete(arg, url, limit = "1"):
 
 if __name__ == "__main__" :
     try :
-        args = sys.argv[1:]
-        for arguments in args:
-            if arguments == "--limit" or arguments == "-l":
-                limit = args[args.index(arguments) + 1]
-                try :
-                    limit == int(limit)
-                except:
-                    print(f"the limit option need to be an integer")
-                    sys.exit(1)
-                args.pop(args.index(limit))
-                args.pop(args.index(arguments))
-            else :
-                None
+        parser = argparse.ArgumentParser()
+        parser.add_argument("-l","--limit", type=int, default=1, help="Permet de modifier le nombre de resultats maximum - Par défaut : 1")
+        parser.add_argument("ip",nargs='+',  type=str, help="IP ou FQDN à rechercher dans l'IPAM")
+        args=parser.parse_args()
 
-        for arguments in args:
-            try :
-                result = requete(arguments, api_url_ip, limit)
-            except :
-                result = requete(arguments, api_url_ip)
-            print(f"Searching for : {arguments}\n")
+        for ips in args.ip :
+            result = requete(ips, api_url_ip, args.limit)
+            print(f"Searching for : {ips}\n")
             if len(result) != 0 :
                 for results in result :
                     print(f'----------')
