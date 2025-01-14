@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
 
+
 try:
     import requests, json, sys, argparse
     from credentials import *
@@ -25,7 +26,20 @@ token_auth = "Token " + api_token
 https_proxy = "http://" + proxy_user + ":" + proxy_password + "@" + proxy_address
 proxies = { "https" : https_proxy }
 
-def requete(arg, url, limit = "1"):
+def debugger(func):
+    def wrapper(*args, **kwargs):
+        if kwargs["debug"] :
+            print(f'##### Fonction lancée : {func.__name__}')
+            print(f'Arguments passés : {kwargs}')
+            print(f'Résultat donné par la fonction : {func(*args, **kwargs)}\n')
+            return func(*args, **kwargs)
+        else :
+            return func(*args, **kwargs)
+            
+    return wrapper
+
+@debugger
+def requete(arg, url, limit, debug):
     '''
     the first argument : arg : all the args passed to the command
     the second argument : url : the url requested for api requests
@@ -40,15 +54,17 @@ def requete(arg, url, limit = "1"):
     result = [ {"ip" : ip["display"], "DNS" : ip["dns_name"], "description" : ip["description"]}  for ip in api_call.get("results")]
     return result
 
+
+
 if __name__ == "__main__" :
     try :
         parser = argparse.ArgumentParser()
-        parser.add_argument("-l","--limit", type=int, default=1, help="Permet de modifier le nombre de resultats maximum - Par défaut : 1")
-        parser.add_argument("ip",nargs='+',  type=str, help="IP ou FQDN à rechercher dans l'IPAM")
+        parser.add_argument("-l","--limit", type=int, default=5, help="Permet de modifier le nombre de resultats maximum - Par défaut : 5")
+        parser.add_argument("-d","--debug", action="store_true", default=False, help="Activation du debug")
+        parser.add_argument("ip",nargs='+', type=str, help="IP ou FQDN à rechercher dans l'IPAM")
         args=parser.parse_args()
-
         for ips in args.ip :
-            result = requete(ips, api_url_ip, args.limit)
+            result = requete(arg = ips, url = api_url_ip, limit = args.limit, debug = args.debug)
             print(f"Searching for : {ips}\n")
             if len(result) != 0 :
                 for results in result :
